@@ -84,15 +84,13 @@ controller.setupWebserver(process.env.PORT, function (err, webserver) {
 //
 // BEGIN EDITING HERE!
 //
-
-controller.on('slash_command', function (slashCommand, message) {
+controller.hears('hello','direct_message',function(bot,message,user){
+bot.reply(message,'Hello!');
+});
+controller.on('slash_command', function (slashCommand, message, user) {
 
     switch (message.command) {
-        case "/echo": //handle the `/echo` slash command. We might have others assigned to this app too!
-            // The rules are simple: If there is no text following the command, treat it as though they had requested "help"
-            // Otherwise just echo back to them what they sent us.
-
-            // but first, let's make sure the token matches!
+        case "/echo":
             if (message.token !== process.env.VERIFICATION_TOKEN) return; //just ignore it.
 
             // if no text was supplied, treat it as a help command
@@ -105,16 +103,23 @@ controller.on('slash_command', function (slashCommand, message) {
 
             // If we made it here, just echo what the user typed back at them
             //TODO You do it!
-            slashCommand.replyPublic(message, "1", function() {
-                slashCommand.replyPublicDelayed(message, "2").then(slashCommand.replyPublicDelayed(message, "3"));
-            });
+            slashCommand.replyPublic(message,"Echo: " + message.text)
 
             break;
+        case "/echomaster":
+            if (message.user_name=="rowena.stewart"){
+                slashCommand.replyPublic(message, "Master says: " + message.text)
+            }
+            else
+              slashCommand.replyPublic(message, "You are not my master, I shan't do your bidding")
+
+            break;
+            /*			      slashCommand.replyPublic(message, "1", function() {
+                            slashCommand.replyPublicDelayed(message, "2").then(slashCommand.replyPublicDelayed(message, "3"));
+                        });*/
         default:
             slashCommand.replyPublic(message, "I'm afraid I don't know how to " + message.command + " yet.");
 
     }
 
-})
-;
-
+});
